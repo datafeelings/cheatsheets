@@ -78,3 +78,9 @@ Only actions such as collect force Spark to optimize and evaluate the transforma
 	lambdaDF = subDF.filter(less_ten(subDF.age))
 	lambdaDF.show()	
 ````
+
+#####Add calculated column using .withColumn(colName, col)
+```python
+df.withColumn('age2', df.age + 2).collect()
+[Row(age=2, name=u'Alice', age2=4), Row(age=5, name=u'Bob', age2=7)]	
+````
