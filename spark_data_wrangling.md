@@ -90,3 +90,17 @@ Only actions such as collect force Spark to optimize and evaluate the transforma
 [Row(age2=2, name=u'Alice'), Row(age2=5, name=u'Bob')]
 ````
 
+#####Return just the values of a column as a list
+```python
+	var_values_list = [(row[0]) for row in df.select("var").collect()]
+	print var_values_list
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+
+# Also extensible to multiple variables
+
+	var_values_list = [(row[0], row[1]) for row in df.select("varA", "varB").collect()]
+	print var_values_list
+[(0, 175), (1, 171), (2, 422), (3, 272), (4, 102), (5, 95), (6, 93), (7, 122), (8, 199), (9, 185), (10, 329), (11, 263), (12, 438), (13, 397), (14, 318), (15, 347), (16, 373), (17, 330), (18, 268), (19, 269), (20, 270), (21, 241), (22, 234), (23, 272)]
+
+````
+
