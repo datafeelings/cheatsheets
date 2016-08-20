@@ -81,6 +81,12 @@ Only actions such as collect force Spark to optimize and evaluate the transforma
 
 #####Add calculated column using .withColumn(colName, col)
 ```python
-df.withColumn('age2', df.age + 2).collect()
+	df.withColumn('age2', df.age + 2).collect()
 [Row(age=2, name=u'Alice', age2=4), Row(age=5, name=u'Bob', age2=7)]	
 ````
+#####Rename a column using .withColumnRenamed(existing, new)
+```python
+	df.withColumnRenamed('age', 'age2').collect()
+[Row(age2=2, name=u'Alice'), Row(age2=5, name=u'Bob')]
+````
+
