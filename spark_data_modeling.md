@@ -10,7 +10,9 @@
     3d) Train the model on the training set
     3e) Inspect the trained model
     3f) Use the pipeline to generate predictions on the test set
-  
+  4. Model evaluation
+    4a) Use an Evaluator to assess model quality (e.g. RegressionEvaluator)
+  5. Model tuning: Model selection and hyperparameter tuning
 ======  
 2. Prepare data for modeling: Pass the variables to the VectorAssembler to create a feature vector  
 
@@ -87,4 +89,26 @@ coefficents.sort(key=lambda tup: abs(tup[0]), reverse=True)
 ```python
 # Apply our LR model to the test data and predict power output
 predictionsAndLabelsDF = lrModel.transform(testSetDF).select("AT", "V", "AP", "RH", "PE", "Predicted_PE")
+````
+
+4. Model evaluation  
+4a) Use an Evaluator to assess model quality (e.g. RegressionEvaluator)  
+
+RegressionEvaluator can use RMSE or R squared as quality statistics.
+
+```python
+# Now let's compute an evaluation metric for our test dataset
+from pyspark.ml.evaluation import RegressionEvaluator
+
+# Create an RMSE evaluator using the label and predicted columns
+regEval = RegressionEvaluator(predictionCol="Predicted_PE", labelCol="PE", metricName="rmse")
+
+# Run the evaluator on the DataFrame
+rmse = regEval.evaluate(predictionsAndLabelsDF)
+print("Root Mean Squared Error: %.2f" % rmse)
+
+# Now let's compute another evaluation metric for our test dataset
+r2 = regEval.evaluate(predictionsAndLabelsDF, {regEval.metricName: "r2"})
+
+print("r2: {0:.2f}".format(r2))
 ````
