@@ -1,5 +1,7 @@
 ### Data modeling process
 
+This cheat sheet is based on the EdX/Databricks open course in Spark ["CS 110: Big Data Analysis with Apache Spark"](https://courses.edx.org/courses/course-v1:BerkeleyX+CS110x+2T2016/info)
+
 #### Summary  
   1. Preprocess variables (data cleaning etc.) and make a DataFrame with them  
   2. Prepare data for modeling: VectorAssembler  
@@ -12,7 +14,8 @@
     3f) Use the pipeline to generate predictions on the test set
   4. Model evaluation
     4a) Use an Evaluator to assess model quality (e.g. RegressionEvaluator)
-  5. Model tuning: Model selection and hyperparameter tuning
+  5. Model tuning: Model selection and hyperparameter tuning  
+
 ======  
 2. Prepare data for modeling: Pass the variables to the VectorAssembler to create a feature vector  
 
