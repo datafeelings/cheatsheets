@@ -6,9 +6,11 @@ This cheatsheet assumes using Databricks, so the set up is taken care of.
 ### Setup imports
   
 // For implicit conversions like converting RDDs to DataFrames  
-import spark.implicits._  
+```scala
+import spark.implicits._
+import org.apache.spark.sql.Row
 
-
+```
 
 ### I/O  
 
@@ -62,6 +64,16 @@ dataframe
 
 ```
 
+**Write into table**
+
+```scala
+df
+  .write
+  .sortBy("column") // optional
+  .partitionBy("column") // optional
+  .format("parquet").saveAsTable("df_table")
+```
+
 ### View data
 
 ```scala
@@ -71,12 +83,37 @@ df.printSchema()
 // Displays the content of the DataFrame to stdout  
 df.show()  
 
+// Take first n rows (.first() for first row only)
+df.head(5)
+
+// Returns all column names and their data types as an array.
+df.dtypes
+
+// Returns all column names as an array.
+df.columns
+
 // Databricks-only function
 display(df)
 ```
-  
+
+### Selection
+
+**Getting by position or name**
+If you want to get just one element by name or position index, you have to specify its type and apply a map function on each row in order to extract it. Then out of the extracted Array pick the required element by position
+
+```scala
+df.map(r=>r.getAs[String](1)).collect()(20) // here, the element at position 20 is taken from column 1 typed as String
+
+// column names are also supported
+df.map(r=>r.getAs[String]("zip")).collect()(20) // here, the element at position 20 is taken from column "zip" typed as String
+
+```
+**Getting by boolean**
+
+
 -----
   
 #### Sources
 https://spark.apache.org/docs/latest/sql-programming-guide.html#overview  
 https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/346304/2168141618055194/484361/latest.html  
+https://spark.apache.org/docs/1.5.1/api/java/org/apache/spark/sql/DataFrame.html  
