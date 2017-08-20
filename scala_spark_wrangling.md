@@ -12,21 +12,32 @@ import spark.implicits._
 
 ### I/O  
   
-// Read CSV into DF  
-`val df = spark.read  
-  .option("header", "true")  
-  .csv("path/filename.csv")`
+**Read CSV into DF**  
+```scala
 
-// Read JSON into DF  
+val df = spark.read  
+  .option("header", "true")  
+  .csv("path/filename.csv")
+
+```
+
+**Read JSON into DF**  
+```scala
+
 val df = spark.read  
   .json("path/filename.json")  
 
+```
 
 ### View data
 
+```scala
+// Print the schema in a tree format
+df.printSchema()
+
 // Displays the content of the DataFrame to stdout  
 df.show()  
-
+```
   
 -----
   
