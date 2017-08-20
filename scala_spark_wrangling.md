@@ -4,28 +4,28 @@ Spark's Scala API (from Spark 2.x) functions used to transform dataframes in a s
 This cheatsheet assumes using Databricks, so the set up is taken care of. 
 
 ### Setup imports
-
-// For implicit conversions like converting RDDs to DataFrames
-import spark.implicits._
+  
+// For implicit conversions like converting RDDs to DataFrames  
+import spark.implicits._  
 
 
 
 ### I/O  
+  
+// Read CSV into DF  
+`val df = spark.read  
+  .option("header", "true")  
+  .csv("path/filename.csv")`
 
-// Read CSV into DF
-val taxes2013 = spark.read
-  .option("header", "true")
-  .csv("path/filename.csv")
-
-// Read JSON into DF
-val df = spark.read
-  .json("path/filename.json")
+// Read JSON into DF  
+val df = spark.read  
+  .json("path/filename.json")  
 
 
 ### View data
 
-// Displays the content of the DataFrame to stdout
-df.show()
+// Displays the content of the DataFrame to stdout  
+df.show()  
 
   
 -----
