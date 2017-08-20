@@ -1,0 +1,4 @@
+# Scala Spark Data Wrangling Cheat Sheet
+
+Spark's Scala API functions used to transform dataframes in a similar fashion to Pandas dfs.
+
