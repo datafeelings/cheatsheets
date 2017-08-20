@@ -3,11 +3,10 @@
 Spark's Scala API (from Spark 2.x) functions used to transform dataframes in a similar fashion to Pandas dfs.
 This cheatsheet assumes using Databricks, so the set up is taken care of. 
 
-### Setup imports
+### Setup imports  
   
-// For implicit conversions like converting RDDs to DataFrames  
 ```scala
-import spark.implicits._
+import spark.implicits._ // For implicit conversions like converting RDDs to DataFrames
 import org.apache.spark.sql.Row
 
 import org.apache.spark.sql.functions._ // for things like Rank, UDF
@@ -151,7 +150,10 @@ val df1 = df.withColumn("new_column_name", update_func)
 
 ```scala
 // "" deals with empty Strings, Null with missing Strings, and isNaN with numeric NAs
-df.filter(df(colName).isNull || df(colName) === "" || df(colName).isNaN).count()
+df.filter(df(colName).isNull || df(colName) === "" || df(colName).isNaN).count().show()
+
+// in order to get the split into NA / non NA:
+df.groupBy($"colName".isNull).count().show()
 ```
 
 **Drop columns & duplicates**  
