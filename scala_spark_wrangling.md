@@ -59,7 +59,7 @@ df.select("column_this", "column_that").write.format("parquet").save("df.parquet
 dataframe
     .write
     .option("header", true)
-    .option("quote", "\u0000") //magic is happening here
+    .option("quote", "\u0000") //deal with unicode quoting
     .csv("/FileStore/temp.csv")
 
 ```
@@ -71,6 +71,7 @@ df
   .write
   .sortBy("column") // optional
   .partitionBy("column") // optional
+  .mode("overwrite) // option to enable overwrite, by default an Exception will be thrown if file/table exists
   .format("parquet").saveAsTable("df_table")
 ```
 
@@ -106,10 +107,38 @@ df.map(r=>r.getAs[String](1)).collect()(20) // here, the element at position 20 
 
 // column names are also supported
 df.map(r=>r.getAs[String]("zip")).collect()(20) // here, the element at position 20 is taken from column "zip" typed as String
-
 ```
-**Getting by boolean**
+  
+**Selecting columns**  
+  
+```scala
+df.select("*")
+df.select("columnthis")
+df.selectExpr("int(columnthis) as int_columnthis") // convert to a different type and rename
+df.selectExpr("*", "int(columnthis) as int_columnthis") // same as above, but also select all of the original columns 
+```
+  
+**Selecting values by Boolean (filtering the DF)**  
+  
+```scala
+df.filter("columnthis < 5") 
+```
+In order to produce a DF with Boolean values filled in for the result of the comparison, use `selectExpr` instead:
+  
+```scala
+df.selectExpr("columnthis < 5") 
+```
 
+
+  
+### Dropping and NAs
+
+**Drop columns**
+
+**Drop duplicates**
+
+**Fill NA**
+df.na.fill(0)
 
 -----
   
