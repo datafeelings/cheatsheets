@@ -10,6 +10,9 @@ This cheatsheet assumes using Databricks, so the set up is taken care of.
 import spark.implicits._
 import org.apache.spark.sql.Row
 
+import org.apache.spark.sql.functions._ // for things like Rank
+import org.apache.spark.sql.expressions.Window
+
 ```
 
 ### I/O  
@@ -99,7 +102,7 @@ display(df)
 
 ### Selection
 
-**Getting by position or name**
+**Getting by position or name**  
 If you want to get just one element by name or position index, you have to specify its type and apply a map function on each row in order to extract it. Then out of the extracted Array pick the required element by position
 
 ```scala
@@ -129,15 +132,22 @@ In order to produce a DF with Boolean values filled in for the result of the com
 ```scala
 df.selectExpr("columnthis < 5") 
 ```
-
-
   
-### Dropping and NAs
+### Dropping and NAs  
+  
+**Count empty values and NAs**  
 
-**Drop columns & duplicates**
+```scala
+// "" deals with empty Strings, Null with missing Strings, and isNaN with numeric NAs
+df.filter(df(colName).isNull || df(colName) === "" || df(colName).isNaN).count()
+```
+
+**Drop columns & duplicates**  
 
 ```scala
 df.drop("columnthis","columnthat")  
+
+df.distinct // Returns a new DataFrame that contains only the unique rows from this DataFrame
 
 df.dropDuplicates()
 df.dropDuplicates("columnthis") // will only return rows with unique values in the "columnthis" column
@@ -145,10 +155,10 @@ df.dropDuplicates("columnthis") // will only return rows with unique values in t
 df.na.drop() // Dropping rows containing any null values.
 
 ```
-
-**Fill NA**
+  
+**Fill NA**  
 The key of the map is the column name, and the value of the map is the replacement value. The value must be of the following type: `Int, Long, Float, Double, String`.
-
+  
 For example, the following replaces `null` values in column "A" with string "unknown", and `null` values in column "B" with numeric value 1.0.
 
 ```scala
@@ -158,9 +168,43 @@ df.na.fill(Map(
 ))
 ```
 
+### Sort & Rank
+
+**Order by values**  
+
+```scala
+df.orderBy("sortcol") // default is ascending
+df.orderBy($"col1", $"col2".desc)
+```
+  
+**Assign rank by column values**  
+
+```scala
+// this creates a window for each value over which the rank is applied
+df.select($"columnthis", rank.over(Window.orderBy($"columnthis")).alias("rank")).show() 
+
+// another option is to use SQL
+df.selectExpr("columnthis", "RANK() OVER (ORDER BY columnthis) AS rank").show()
+```
+  
+### Retrieving DataFrame Information
+
+```scala
+df.count()   // Returns the number of rows in the DataFrame.
+
+df.describe() // Computes statistics for numeric columns, including count, mean, stddev, min, and max.
+df.describe("column1", "column2")
+
+// df.agg(...) is a shorthand for df.groupBy().agg(...)
+df.agg(max($"age"), avg($"salary")) // apply aggregation functions w/o grouping to get to min/max/avg values of columns
+df.groupBy().agg(max($"age"), avg($"salary"))
+```
+
 -----
   
 #### Sources
 https://spark.apache.org/docs/latest/sql-programming-guide.html#overview  
 https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/346304/2168141618055194/484361/latest.html  
 https://spark.apache.org/docs/1.5.1/api/java/org/apache/spark/sql/DataFrame.html  
+https://stackoverflow.com/questions/33729787/computing-rank-of-a-row  
+https://stackoverflow.com/questions/44329398/count-empty-values-in-dataframe-column-in-spark-scala  
