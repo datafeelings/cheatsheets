@@ -10,8 +10,9 @@ This cheatsheet assumes using Databricks, so the set up is taken care of.
 import spark.implicits._
 import org.apache.spark.sql.Row
 
-import org.apache.spark.sql.functions._ // for things like Rank
+import org.apache.spark.sql.functions._ // for things like Rank, UDF
 import org.apache.spark.sql.expressions.Window
+
 
 ```
 
@@ -100,7 +101,7 @@ df.columns
 display(df)
 ```
 
-### Selection
+### Selection & Setting Values
 
 **Getting by position or name**  
 If you want to get just one element by name or position index, you have to specify its type and apply a map function on each row in order to extract it. Then out of the extracted Array pick the required element by position
@@ -132,7 +133,18 @@ In order to produce a DF with Boolean values filled in for the result of the com
 ```scala
 df.selectExpr("columnthis < 5") 
 ```
+
+**Setting values by Boolean condition**
   
+As DFs are immutale, a new DF with the updated values should be returned
+
+```scala
+// Function to update the values based on a condition
+val update_func = (when($"update_col" === replace_val, new_value).otherwise($"update_col"))
+
+val df1 = df.withColumn("new_column_name", update_func)
+```
+  
 ### Dropping and NAs  
   
 **Count empty values and NAs**  
@@ -195,9 +207,32 @@ df.count()   // Returns the number of rows in the DataFrame.
 df.describe() // Computes statistics for numeric columns, including count, mean, stddev, min, and max.
 df.describe("column1", "column2")
 
+// There is some problem with the syntax below even though it is listed here:
+// https://spark.apache.org/docs/1.5.1/api/java/org/apache/spark/sql/GroupedData.html
 // df.agg(...) is a shorthand for df.groupBy().agg(...)
-df.agg(max($"age"), avg($"salary")) // apply aggregation functions w/o grouping to get to min/max/avg values of columns
-df.groupBy().agg(max($"age"), avg($"salary"))
+// df.agg(max($"age"), avg($"salary")) // apply aggregation functions w/o grouping to get to min/max/avg values of columns
+// df.groupBy().agg(max($"age"), avg($"salary"))
+```
+
+### Applying Functions
+
+**Applying function to a column**
+
+Spark UDFs are *column-based* functions and can be simple unnamed functions or more complex functions.  
+Simple case:  
+
+```scala
+// define the UDF
+val upperUDF = udf { s: String => s.toUpperCase } // warning - this function can't handle Nulls
+
+// or define the UDF and register it be available to the SQLContext:
+spark.udf.register("upperUDF",  (s: String) => s.toUpperCase)
+
+// apply the UDF to create a new column
+df.withColumn("upper", upperUDF($"columnname")).show()
+
+// or like this if the UDF is registered:
+df.selectExpr("*", "upperUDF(columnname) as udf_output").show()
 ```
 
 -----
@@ -208,3 +243,4 @@ https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93e
 https://spark.apache.org/docs/1.5.1/api/java/org/apache/spark/sql/DataFrame.html  
 https://stackoverflow.com/questions/33729787/computing-rank-of-a-row  
 https://stackoverflow.com/questions/44329398/count-empty-values-in-dataframe-column-in-spark-scala  
+https://stackoverflow.com/questions/29109916/updating-a-dataframe-column-in-spark  
