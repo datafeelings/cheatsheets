@@ -11,7 +11,17 @@ import spark.implicits._
 
 
 ### I/O  
-  
+
+For built-in types, their short names can be used for read and write operations:   
+`json, parquet, jdbc, orc, libsvm, csv, text`  
+    
+**Read Parquet into DF**  
+
+```scala
+val df = spark.read
+  .load("examples/src/main/resources/users.parquet")
+```
+
 **Read CSV into DF**  
 ```scala
 
@@ -27,6 +37,29 @@ val df = spark.read  
 val df = spark.read  
   .json("path/filename.json")  
 
+// alternatively
+val df = spark.read
+  .format("json")
+  .load("path/filename.json")  
+
+```
+
+**Write into file**  
+
+```scala
+df.select("column_this", "column_that").write.save("df.parquet")
+// with options
+df.select("column_this", "column_that").write.format("parquet").save("df.parquet")
+
+// with more options for CSV
+// source: https://forums.databricks.com/questions/8515/datawriteformatcomdatabrickssparkcsv-added-additio.html
+
+dataframe
+    .write
+    .option("header", true)
+    .option("quote", "\u0000") //magic is happening here
+    .csv("/FileStore/temp.csv")
+
 ```
 
 ### View data
@@ -37,6 +70,9 @@ df.printSchema()
 
 // Displays the content of the DataFrame to stdout  
 df.show()  
+
+// Databricks-only function
+display(df)
 ```
   
 -----
