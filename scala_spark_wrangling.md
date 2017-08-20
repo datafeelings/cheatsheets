@@ -122,6 +122,7 @@ df.selectExpr("*", "int(columnthis) as int_columnthis") // same as above, but al
   
 ```scala
 df.filter("columnthis < 5") 
+df.filter("columnthis < 5 AND columnthat = 'stringvalue' OR columnthh IS NULL") // familiar SQL syntax
 ```
 In order to produce a DF with Boolean values filled in for the result of the comparison, use `selectExpr` instead:
   
@@ -133,12 +134,29 @@ df.selectExpr("columnthis < 5")
   
 ### Dropping and NAs
 
-**Drop columns**
+**Drop columns & duplicates**
 
-**Drop duplicates**
+```scala
+df.drop("columnthis","columnthat")  
+
+df.dropDuplicates()
+df.dropDuplicates("columnthis") // will only return rows with unique values in the "columnthis" column
+
+df.na.drop() // Dropping rows containing any null values.
+
+```
 
 **Fill NA**
-df.na.fill(0)
+The key of the map is the column name, and the value of the map is the replacement value. The value must be of the following type: `Int, Long, Float, Double, String`.
+
+For example, the following replaces `null` values in column "A" with string "unknown", and `null` values in column "B" with numeric value 1.0.
+
+```scala
+df.na.fill(Map(
+ "A" -> "unknown",
+ "B" -> 1.0
+))
+```
 
 -----
   
