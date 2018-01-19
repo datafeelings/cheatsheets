@@ -237,6 +237,15 @@ df.withColumn("upper", upperUDF($"columnname")).show()
 df.selectExpr("*", "upperUDF(columnname) as udf_output").show()
 ```
 
+### Extract values from Dataframe
+
+**Get column values as a simple array**
+
+```scala
+// Will return the first 5 values of colName as a simple Array[String]
+df.select("colName").take(5).map(x => x.getString(0))
+```
+
 -----
   
 #### Sources
